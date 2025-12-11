@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Bot Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8a2be2;
+            --primary-dark: #6a1cb0;
+            --primary-light: #9d4edd;
+            --secondary: #121212;
+            --secondary-light: #1e1e1e;
+            --accent: #ff6b6b;
+            --text: #ffffff;
+            --text-secondary: #b0b0b0;
+            --success: #00ff88;
+            --danger: #ff4757;
+            --warning: #ffaa00;
+            --card-bg: rgba(30, 30, 30, 0.8);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --neon-glow: 0 0 20px var(--primary),
+                         0 0 40px var(--primary),
+                         0 0 60px var(--primary);
+            --neon-text: 0 0 10px #fff,
+                        0 0 20px var(--primary),
+                        0 0 30px var(--primary);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--secondary) 0%, #000000 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 30%, var(--primary) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, var(--accent) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+            filter: blur(100px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+            text-shadow: var(--neon-text);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary); }
+            to { text-shadow: 0 0 20px var(--primary), 0 0 40px var(--primary), 0 0 60px var(--primary); }
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Authentication */
+        .auth-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+
+        .auth-container.active {
+            display: block;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 45px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--neon-glow);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Main Dashboard */
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px rgba(138, 43, 226, 0.2);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Form Container */
+        .form-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid var(--glass-border);
+            margin-bottom: 30px;
+        }
+
+        .form-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, var(--success), #00cc6a);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, var(--danger), #ff2e43);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, var(--warning), #ff8800);
+        }
+
+        /* Numbers List */
+        .numbers-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .numbers-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            width: 300px;
+            padding: 12px;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .numbers-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .number-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--glass-bg);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .number-item:hover {
+            background: rgba(138, 43, 226, 0.1);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .number-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .number-badge {
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .number-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .number-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn.delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .action-btn.copy {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        /* Alert */
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            z-index: 1001;
+            animation: slideInRight 0.3s ease-out;
+            display: none;
+        }
+
+        .alert.active {
+            display: block;
+        }
+
+        .alert.success {
+            background: var(--success);
+        }
+
+        .alert.error {
+            background: var(--danger);
+        }
+
+        .alert.warning {
+            background: var(--warning);
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .numbers-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="logo floating">NOVA BOT</h1>
+            <p class="tagline">Advanced WhatsApp Bot Administration Panel</p>
+        </div>
+
+        <!-- Authentication -->
+        <div class="auth-container active" id="authContainer">
+            <h2 class="auth-title">Secure Access</h2>
+            <div class="input-group">
+                <label class="input-label">Master Password</label>
+                <input type="password" id="password" class="input-field" placeholder="Enter password">
+                <button type="button" class="password-toggle" id="togglePassword">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <button class="btn" id="loginBtn">Unlock Dashboard</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="dashboard" id="dashboard">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="stat-number" id="totalBots">0</div>
+                    <div class="stat-label">Active Bots</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="stat-number" id="totalUsers">0</div>
+                    <div class="stat-label">Registered Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <div class="stat-number" id="blockedUsers">0</div>
+                    <div class="stat-label">Blocked Numbers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="stat-number" id="uptime">100%</div>
+                    <div class="stat-label">System Uptime</div>
+                </div>
+            </div>
+
+            <!-- Add Number Form -->
+            <div class="form-container">
+                <h2 class="form-title">Add WhatsApp Number</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" id="phoneNumber" class="form-input" placeholder="628xxxxxxxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Owner Name</label>
+                        <input type="text" id="ownerName" class="form-input" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bot Name</label>
+                        <input type="text" id="botName" class="form-input" placeholder="Nova Assistant">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Access Level</label>
+                        <select id="accessLevel" class="form-input">
+                            <option value="user">User</option>
+                            <option value="vip">VIP</option>
+                            <option value="admin">Admin</option>
+                            <option value="owner">Owner</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-success" id="addNumberBtn">Add Number</button>
+                <button class="btn btn-warning" id="updateAllBtn">Update All Numbers</button>
+            </div>
+
+            <!-- Numbers List -->
+            <div class="numbers-container">
+                <div class="numbers-header">
+                    <h3>Registered Numbers</h3>
+                    <input type="text" class="search-box" id="searchInput" placeholder="Search numbers...">
+                </div>
+                <div class="numbers-list" id="numbersList">
+                    <!-- Numbers will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert -->
+    <div class="alert" id="alert"></div>
+
+    <!-- Script -->
+    <script>
+        const PASSWORD = "novamdrimkyoko";
+        let numbers = [];
+        let filteredNumbers = [];
+
+        // DOM Elements
+        const authContainer = document.getElementById('authContainer');
+        const dashboard = document.getElementById('dashboard');
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const addNumberBtn = document.getElementById('addNumberBtn');
+        const updateAllBtn = document.getElementById('updateAllBtn');
+        const searchInput = document.getElementById('searchInput');
+        const numbersList = document.getElementById('numbersList');
+        const alertBox = document.getElementById('alert');
+        const phoneNumberInput = document.getElementById('phoneNumber');
+        const ownerNameInput = document.getElementById('ownerName');
+        const botNameInput = document.getElementById('botName');
+        const accessLevelSelect = document.getElementById('accessLevel');
+        const totalBots = document.getElementById('totalBots');
+        const totalUsers = document.getElementById('totalUsers');
+        const blockedUsers = document.getElementById('blockedUsers');
+        const uptime = document.getElementById('uptime');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNumbers();
+            updateStats();
+            generateFakeData();
+        });
+
+        // Password Toggle
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+
+        // Login
+        loginBtn.addEventListener('click', () => {
+            const password = passwordInput.value.trim();
+            
+            if (password === PASSWORD) {
+                authContainer.classList.remove('active');
+                dashboard.classList.add('active');
+                showAlert('🔓 Access granted! Welcome to Nova Dashboard', 'success');
+                passwordInput.value = '';
+            } else {
+                showAlert('❌ Incorrect password!', 'error');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        });
+
+        // Add Number
+        addNumberBtn.addEventListener('click', async () => {
+            const phone = phoneNumberInput.value.trim();
+            const owner = ownerNameInput.value.trim();
+            const bot = botNameInput.value.trim();
+            const access = accessLevelSelect.value;
+
+            if (!phone || phone.length < 10) {
+                showAlert('❌ Please enter a valid phone number', 'error');
+                return;
+            }
+
+            if (!owner) {
+                showAlert('❌ Please enter owner name', 'error');
+                return;
+            }
+
+            // Simulate adding to database
+            const newNumber = {
+                id: Date.now(),
+                phone,
+                owner,
+                bot,
+                access,
+                status: 'active',
+                added: new Date().toLocaleDateString('id-ID')
+            };
+
+            numbers.push(newNumber);
+            saveNumbers();
+            renderNumbers();
+            clearForm();
+            
+            // Simulate GitHub update
+            await simulateGitHubUpdate();
+            
+            showAlert('✅ Number added successfully!', 'success');
+        });
+
+        // Update All Numbers
+        updateAllBtn.addEventListener('click', async () => {
+            showAlert('🔄 Updating all numbers to GitHub...', 'warning');
+            
+            // Simulate API call
+            setTimeout(async () => {
+                await simulateGitHubUpdate();
+                showAlert('✅ All numbers synchronized with GitHub!', 'success');
+            }, 2000);
+        });
+
+        // Search
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            filteredNumbers = numbers.filter(num => 
+                num.phone.includes(query) || 
+                num.owner.toLowerCase().includes(query) ||
+                num.bot.toLowerCase().includes(query)
+            );
+            renderNumbers();
+        });
+
+        // Render Numbers List
+        function renderNumbers() {
+            const displayNumbers = filteredNumbers.length > 0 ? filteredNumbers : numbers;
+            
+            numbersList.innerHTML = displayNumbers.map((num, index) => `
+                <div class="number-item">
+                    <div class="number-info">
+                        <div class="number-badge">${index + 1}</div>
+                        <div>
+                            <div class="number-text">${num.phone}</div>
+                            <small>Owner: ${num.owner} | Bot: ${num.bot}</small>
+                        </div>
+                    </div>
+                    <div class="number-actions">
+                        <span class="badge ${num.access}">${num.access.toUpperCase()}</span>
+                        <button class="action-btn copy" onclick="copyNumber('${num.phone}')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <button class="action-btn delete" onclick="deleteNumber(${num.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Copy Number
+        window.copyNumber = (phone) => {
+            navigator.clipboard.writeText(phone);
+            showAlert('📋 Number copied to clipboard!', 'success');
+        };
+
+        // Delete Number
+        window.deleteNumber = (id) => {
+            if (confirm('Are you sure you want to delete this number?')) {
+                numbers = numbers.filter(num => num.id !== id);
+                saveNumbers();
+                renderNumbers();
+                updateStats();
+                showAlert('🗑️ Number deleted successfully!', 'success');
+            }
+        };
+
+        // Clear Form
+        function clearForm() {
+            phoneNumberInput.value = '';
+            ownerNameInput.value = '';
+            botNameInput.value = '';
+            accessLevelSelect.value = 'user';
+            phoneNumberInput.focus();
+        }
+
+        // Save Numbers to LocalStorage
+        function saveNumbers() {
+            localStorage.setItem('nova_numbers', JSON.stringify(numbers));
+            updateStats();
+        }
+
+        // Load Numbers from LocalStorage
+        function loadNumbers() {
+            const saved = localStorage.getItem('nova_numbers');
+            numbers = saved ? JSON.parse(saved) : [];
+            filteredNumbers = [...numbers];
+            renderNumbers();
+        }
+
+        // Update Stats
+        function updateStats() {
+            totalBots.textContent = numbers.length;
+            totalUsers.textContent = numbers.filter(n => n.status === 'active').length;
+            blockedUsers.textContent = numbers.filter(n => n.access === 'blocked').length;
+            uptime.textContent = '100%';
+        }
+
+        // Show Alert
+        function showAlert(message, type) {
+            alertBox.textContent = message;
+            alertBox.className = `alert ${type} active`;
+            
+            setTimeout(() => {
+                alertBox.classList.remove('active');
+            }, 3000);
+        }
+
+        // Simulate GitHub Update
+        async function simulateGitHubUpdate() {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    console.log('Simulating GitHub update...');
+                    resolve();
+                }, 1500);
+            });
+        }
+
+        // Generate Fake Data for Demo
+        function generateFakeData() {
+            if (numbers.length === 0) {
+                const fakeNumbers = [
+                    { id: 1, phone: '6285278183845', owner: 'Rim Official', bot: 'Nova Prime', access: 'owner', status: 'active', added: '2024-01-01' },
+                    { id: 2, phone: '6281234567890', owner: 'John Doe', bot: 'Nova Assistant', access: 'admin', status: 'active', added: '2024-01-15' },
+                    { id: 3, phone: '6289876543210', owner: 'Jane Smith', bot: 'Nova Helper', access: 'vip', status: 'active', added: '2024-02-01' },
+                    { id: 4, phone: '6281112223333', owner: 'Bob Wilson', bot: 'Nova Bot', access: 'user', status: 'active', added: '2024-02-15' },
+                    { id: 5, phone: '6284445556666', owner: 'Alice Brown', bot: 'Nova AI', access: 'blocked', status: 'inactive', added: '2024-03-01' }
+                ];
+                
+                numbers = fakeNumbers;
+                saveNumbers();
+                renderNumbers();
+            }
+        }
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl + L to logout
+            if (e.ctrlKey && e.key === 'l') {
+                e.preventDefault();
+                dashboard.classList.remove('active');
+                authContainer.classList.add('active');
+                showAlert('👋 Logged out successfully', 'warning');
+            }
+            
+            // Ctrl + A to add number
+            if (e.ctrlKey && e.key === 'a') {
+                e.preventDefault();
+                phoneNumberInput.focus();
+            }
+            
+            // Enter to login
+            if (e.key === 'Enter' && authContainer.classList.contains('active')) {
+                loginBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
