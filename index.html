@@ -1,252 +1,129 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOVA BOT MANAGER</title>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box}body{font-family:sans-serif;background:linear-gradient(135deg,#ff0000,#ff4d4d,#ffffff);color:#333;min-height:100vh}.container{max-width:900px;margin:0 auto;padding:20px}.header{text-align:center;padding:40px 0}.title{font-size:3.5rem;font-weight:900;color:#ff0000;margin-bottom:10px}.subtitle{color:#666}.auth-box{background:rgba(255,255,255,0.9);border-radius:15px;padding:40px;margin:30px auto;max-width:400px;border:2px solid #ff0000}.auth-title{text-align:center;margin-bottom:30px;font-size:1.8rem;color:#ff0000}.input-group{margin-bottom:25px}.input-group label{display:block;margin-bottom:8px;color:#666}.input-group input{width:100%;padding:12px 15px;background:white;border:2px solid #ff0000;border-radius:8px;color:#333;font-size:1rem}.btn{width:100%;padding:15px;background:#ff0000;border:none;border-radius:8px;color:white;font-size:1.1rem;font-weight:600;cursor:pointer}.dashboard{display:none}.dashboard.active{display:block}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:40px}.stat-card{background:white;border-radius:12px;padding:25px;text-align:center;border:2px solid #ff0000}.stat-number{font-size:2.5rem;font-weight:bold;color:#ff0000}.stat-label{color:#666;font-size:0.9rem}.form-section{background:white;border-radius:15px;padding:30px;margin-bottom:30px;border:2px solid #ff0000}.section-title{font-size:1.8rem;margin-bottom:25px;color:#ff0000}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}@media(max-width:768px){.form-grid{grid-template-columns:1fr}}.form-group{margin-bottom:20px}.form-group label{display:block;margin-bottom:8px;color:#666}.form-control{width:100%;padding:12px;background:white;border:2px solid #ff0000;border-radius:8px;color:#333}.btn-group{display:flex;gap:15px;margin-top:20px}.btn-primary{background:#ff0000}.btn-secondary{background:#666}.numbers-box{background:white;border-radius:15px;padding:30px;border:2px solid #ff0000}.numbers-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}.search-box{width:300px;padding:10px 15px;border:2px solid #ff0000;border-radius:8px;color:#333}.numbers-list{max-height:500px;overflow-y:auto}.number-item{background:#fff5f5;border-radius:10px;padding:15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;border:1px solid #ff0000}.number-info{display:flex;align-items:center;gap:15px}.number-index{background:#ff0000;width:35px;height:35px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;color:white}.number-text{font-size:1.1rem;font-weight:500}.number-actions{display:flex;gap:10px}.btn-sm{padding:8px 15px;border-radius:6px;border:none;color:white;cursor:pointer}.btn-copy{background:#ff0000}.btn-delete{background:#666}.alert{position:fixed;top:20px;right:20px;padding:20px;border-radius:10px;background:#ff0000;color:white;display:none;z-index:1001}.alert.active{display:block}
-    </style>
+<title>NOVA BOT</title>
+<style>
+body{margin:0;background:#ff0000;color:white;font-family:arial}.header{text-align:center;padding:30px;background:#cc0000}h1{font-size:40px;margin:0}.login-box{width:300px;margin:100px auto;background:white;padding:30px;border-radius:10px}input,button{width:100%;padding:10px;margin:10px 0;box-sizing:border-box}input{border:2px solid #ff0000}button{background:#ff0000;color:white;border:none;cursor:pointer}.dashboard{display:none;padding:20px}.stat{display:inline-block;background:white;color:#ff0000;padding:20px;margin:10px;border-radius:10px}.section{margin:20px 0;background:white;padding:20px;border-radius:10px;color:#333}.number-item{background:#ffe6e6;margin:5px 0;padding:10px;border-radius:5px}.alert{position:fixed;top:20px;right:20px;background:#ff0000;padding:15px;border-radius:5px;display:none}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1 class="title">NOVA BOT</h1>
-            <p class="subtitle">WhatsApp Bot Management</p>
-        </div>
-        <div class="auth-box" id="authBox">
-            <h2 class="auth-title">🔐 ACCESS</h2>
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" id="passwordInput" placeholder="Enter password">
-            </div>
-            <button class="btn" onclick="login()">ENTER</button>
-        </div>
-        <div class="dashboard" id="dashboard">
-            <div class="stats">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalNumbers">0</div>
-                    <div class="stat-label">TOTAL NUMBERS</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="blacklisted">0</div>
-                    <div class="stat-label">BLACKLISTED</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="lastUpdate">-</div>
-                    <div class="stat-label">LAST UPDATE</div>
-                </div>
-            </div>
-            <div class="form-section">
-                <h2 class="section-title">➕ ADD NUMBER</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="text" id="phoneInput" class="form-control" placeholder="628xxxxxxxxxx">
-                    </div>
-                    <div class="form-group">
-                        <label>List</label>
-                        <select id="listSelect" class="form-control">
-                            <option value="nomor">Allowed</option>
-                            <option value="blacklist">Blacklisted</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="addNumber()">ADD</button>
-                    <button class="btn btn-secondary" onclick="loadNumbers()">REFRESH</button>
-                </div>
-            </div>
-            <div class="numbers-box">
-                <div class="numbers-header">
-                    <h2 class="section-title">📱 NUMBERS</h2>
-                    <input type="text" class="search-box" id="searchInput" placeholder="Search..." onkeyup="filterNumbers()">
-                </div>
-                <div class="numbers-list" id="numbersList"></div>
-            </div>
-        </div>
-    </div>
-    <div class="alert" id="alert"></div>
-    <script>
-        const GITHUB_TOKEN = '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';
-        const GITHUB_REPO = 'rimprsty/novadb';
-        const PASSWORD = 'novamdrimkyoko';
-        let numbers = [];
-        
-        function login() {
-            const password = document.getElementById('passwordInput').value;
-            if (password === PASSWORD) {
-                document.getElementById('authBox').style.display = 'none';
-                document.getElementById('dashboard').classList.add('active');
-                loadNumbers();
-                showAlert('✅ ACCESS GRANTED');
-            } else {
-                showAlert('❌ WRONG PASSWORD');
-            }
-        }
-        
-        async function loadNumbers() {
-            showAlert('📡 LOADING DATA');
-            try {
-                const nomorRes = await fetch('https://raw.githubusercontent.com/rimprsty/novadb/main/nomor');
-                const nomorData = await nomorRes.json();
-                const blacklistRes = await fetch('https://raw.githubusercontent.com/rimprsty/novadb/main/blacklist');
-                const blacklistData = await blacklistRes.json();
-                numbers = [];
-                if (nomorData.nomor) {
-                    nomorData.nomor.forEach(phone => {
-                        numbers.push({phone: phone, list: 'nomor'});
-                    });
-                }
-                if (blacklistData.nomor) {
-                    blacklistData.nomor.forEach(phone => {
-                        numbers.push({phone: phone, list: 'blacklist'});
-                    });
-                }
-                updateStats();
-                renderNumbers();
-                showAlert('✅ DATA LOADED');
-            } catch (error) {
-                showAlert('❌ LOAD ERROR');
-            }
-        }
-        
-        async function addNumber() {
-            const phone = document.getElementById('phoneInput').value.trim();
-            const list = document.getElementById('listSelect').value;
-            if (!phone || phone.length < 10) {
-                showAlert('❌ INVALID NUMBER');
-                return;
-            }
-            const apiUrl = `https://api.github.com/repos/rimprsty/novadb/contents/${list}`;
-            try {
-                const res = await fetch(apiUrl, {
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-                const data = await res.json();
-                const content = atob(data.content);
-                const jsonData = JSON.parse(content);
-                if (!jsonData.nomor.includes(phone)) {
-                    jsonData.nomor.push(phone);
-                    const updateRes = await fetch(apiUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${GITHUB_TOKEN}`,
-                            'Accept': 'application/vnd.github.v3+json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: `Add ${phone}`,
-                            content: btoa(JSON.stringify(jsonData, null, 2)),
-                            sha: data.sha
-                        })
-                    });
-                    if (updateRes.ok) {
-                        showAlert(`✅ ADDED TO ${list}`);
-                        document.getElementById('phoneInput').value = '';
-                        loadNumbers();
-                    } else {
-                        showAlert('❌ UPDATE FAILED');
-                    }
-                } else {
-                    showAlert('⚠️ ALREADY EXISTS');
-                }
-            } catch (error) {
-                showAlert('❌ NETWORK ERROR');
-            }
-        }
-        
-        async function deleteNumber(phone, list) {
-            if (!confirm(`DELETE ${phone}?`)) return;
-            const apiUrl = `https://api.github.com/repos/rimprsty/novadb/contents/${list}`;
-            try {
-                const res = await fetch(apiUrl, {
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-                const data = await res.json();
-                const content = atob(data.content);
-                const jsonData = JSON.parse(content);
-                jsonData.nomor = jsonData.nomor.filter(n => n !== phone);
-                const updateRes = await fetch(apiUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `Delete ${phone}`,
-                        content: btoa(JSON.stringify(jsonData, null, 2)),
-                        sha: data.sha
-                    })
-                });
-                if (updateRes.ok) {
-                    showAlert(`✅ DELETED FROM ${list}`);
-                    loadNumbers();
-                } else {
-                    showAlert('❌ DELETE FAILED');
-                }
-            } catch (error) {
-                showAlert('❌ NETWORK ERROR');
-            }
-        }
-        
-        function updateStats() {
-            document.getElementById('totalNumbers').textContent = numbers.length;
-            const blacklistedCount = numbers.filter(n => n.list === 'blacklist').length;
-            document.getElementById('blacklisted').textContent = blacklistedCount;
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('id-ID');
-        }
-        
-        function renderNumbers() {
-            const list = document.getElementById('numbersList');
-            list.innerHTML = numbers.map((num, index) => `
-                <div class="number-item">
-                    <div class="number-info">
-                        <div class="number-index">${index + 1}</div>
-                        <div class="number-text">${num.phone}</div>
-                        <span style="color:${num.list === 'blacklist' ? '#ff0000' : '#00aa00'};font-weight:bold">${num.list.toUpperCase()}</span>
-                    </div>
-                    <div class="number-actions">
-                        <button class="btn-sm btn-copy" onclick="copyNumber('${num.phone}')">COPY</button>
-                        <button class="btn-sm btn-delete" onclick="deleteNumber('${num.phone}', '${num.list}')">DELETE</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        function filterNumbers() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const items = document.querySelectorAll('.number-item');
-            items.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.display = text.includes(query) ? 'flex' : 'none';
-            });
-        }
-        
-        function copyNumber(phone) {
-            navigator.clipboard.writeText(phone);
-            showAlert('📋 COPIED');
-        }
-        
-        function showAlert(message) {
-            const alert = document.getElementById('alert');
-            alert.textContent = message;
-            alert.classList.add('active');
-            setTimeout(() => alert.classList.remove('active'), 3000);
-        }
-        
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && document.getElementById('authBox').style.display !== 'none') {
-                login();
-            }
-        });
-    </script>
+<div class="header">
+<h1>NOVA BOT MANAGER</h1>
+</div>
+<div class="login-box" id="loginBox">
+<h2 style="color:#ff0000">LOGIN</h2>
+<input type="password" id="pass" placeholder="Password">
+<button onclick="login()">LOGIN</button>
+</div>
+<div class="dashboard" id="dashboard">
+<div>
+<div class="stat">
+<div style="font-size:30px" id="total">0</div>
+<div>TOTAL</div>
+</div>
+<div class="stat">
+<div style="font-size:30px" id="black">0</div>
+<div>BLACKLIST</div>
+</div>
+</div>
+<div class="section">
+<h2 style="color:#ff0000">ADD NUMBER</h2>
+<input type="text" id="phone" placeholder="628xxxxxxx">
+<select id="type">
+<option value="nomor">ALLOWED</option>
+<option value="blacklist">BLACKLIST</option>
+</select>
+<button onclick="addNum()">ADD</button>
+</div>
+<div class="section">
+<h2 style="color:#ff0000">NUMBERS</h2>
+<input type="text" placeholder="Search..." id="search" onkeyup="searchNum()">
+<div id="list"></div>
+</div>
+</div>
+<div class="alert" id="alert"></div>
+<script>
+const TOKEN='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';
+let nums=[];
+
+function login(){
+if(document.getElementById('pass').value==='novamdrimkyoko'){
+document.getElementById('loginBox').style.display='none';
+document.getElementById('dashboard').style.display='block';
+load();
+showMsg('SUCCESS');
+}else{
+showMsg('WRONG PASSWORD');
+}}
+
+async function load(){
+showMsg('LOADING');
+try{
+const res1=await fetch('https://raw.githubusercontent.com/rimprsty/novadb/main/nomor');
+const res2=await fetch('https://raw.githubusercontent.com/rimprsty/novadb/main/blacklist');
+const data1=await res1.json();
+const data2=await res2.json();
+nums=[];
+if(data1.nomor)data1.nomor.forEach(p=>nums.push({n:p,t:'nomor'}));
+if(data2.nomor)data2.nomor.forEach(p=>nums.push({n:p,t:'blacklist'}));
+update();
+showMsg('LOADED');
+}catch{showMsg('ERROR');}}
+
+async function addNum(){
+const p=document.getElementById('phone').value.trim();
+const t=document.getElementById('type').value;
+if(!p){showMsg('INVALID');return;}
+const url=`https://api.github.com/repos/rimprsty/novadb/contents/${t}`;
+try{
+const res=await fetch(url,{headers:{'Authorization':`token ${TOKEN}`}});
+const data=await res.json();
+const j=JSON.parse(atob(data.content));
+if(!j.nomor.includes(p)){
+j.nomor.push(p);
+await fetch(url,{method:'PUT',headers:{'Authorization':`token ${TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify({message:'add',content:btoa(JSON.stringify(j)),sha:data.sha})});
+showMsg('ADDED');
+document.getElementById('phone').value='';
+load();
+}else{showMsg('EXISTS');}}
+catch{showMsg('NETWORK ERROR');}}
+
+async function delNum(p,t){
+if(!confirm(`DELETE ${p}?`))return;
+const url=`https://api.github.com/repos/rimprsty/novadb/contents/${t}`;
+try{
+const res=await fetch(url,{headers:{'Authorization':`token ${TOKEN}`}});
+const data=await res.json();
+const j=JSON.parse(atob(data.content));
+j.nomor=j.nomor.filter(n=>n!==p);
+await fetch(url,{method:'PUT',headers:{'Authorization':`token ${TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify({message:'delete',content:btoa(JSON.stringify(j)),sha:data.sha})});
+showMsg('DELETED');
+load();
+}catch{showMsg('ERROR');}}
+
+function update(){
+document.getElementById('total').textContent=nums.length;
+document.getElementById('black').textContent=nums.filter(x=>x.t==='blacklist').length;
+let html='';
+nums.forEach((num,i)=>{
+html+=`<div class="number-item">
+<div>${num.n} <span style="color:${num.t==='blacklist'?'#ff0000':'#00aa00'}">${num.t.toUpperCase()}</span></div>
+<button onclick="delNum('${num.n}','${num.t}')" style="background:#ff0000;color:white;border:none;padding:5px">DELETE</button>
+</div>`;
+});
+document.getElementById('list').innerHTML=html;}
+
+function searchNum(){
+const q=document.getElementById('search').value.toLowerCase();
+document.querySelectorAll('.number-item').forEach(item=>{
+item.style.display=item.textContent.toLowerCase().includes(q)?'block':'none';
+});}
+
+function showMsg(m){
+const a=document.getElementById('alert');
+a.textContent=m;
+a.style.display='block';
+setTimeout(()=>a.style.display='none',2000);}
+</script>
 </body>
 </html>
